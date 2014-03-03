@@ -24,8 +24,13 @@ P2P file distribution using WebRTC
 	* 画像を多くキャッシュしておくかどうか？
 		* File System API? 
 		* Session Storage?
+* 改ざん防止
+	* hashを付加することで怪しい画像は表示しないようにする
+	* 怪しい画像をよく送っている人を記録する
+* 画像の転送
+	* 最新のFirefox, Chromeではバイナリを送信可能
     
-## ライブラリ
+## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
 	* 今回はこれを使用
 	* WebSocket, XHRにフォールバックする
@@ -37,3 +42,6 @@ P2P file distribution using WebRTC
 * [webRTC.io](https://github.com/webRTC/webRTC.io)
 	* 1年間更新がない
 	* ルーム機能
+
+## References
+* [FileとWebの関係をもっと知る Blob, FileそしてFileSystem API](https://docs.google.com/presentation/d/1zwNaA0N7SNaIRc3rckEb_bSBsfWCw4Yg-UQgjgWRoVI/present#slide=id.i0): バイナリの扱い
