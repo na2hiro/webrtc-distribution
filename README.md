@@ -1,8 +1,8 @@
 # WebRTC Distribution
 P2P file distribution using WebRTC
 
-## Files
-### pingpong/
+## Directories
+### pingpong
 2-user ping pong test. idを入力する必要があるのは複数の人が同じidを名乗るとマズいからです．
 
 1. pinger.htmlを開く
@@ -20,7 +20,7 @@ P2P file distribution using WebRTC
 4. ponger.htmlを開く
 
 ### transfer-image
-transfer file in sender-receiver style
+transfer files in sender-receiver style
 
 1. `node server.js`でサーバ起動
 2. sender.htmlを開く
@@ -47,6 +47,7 @@ transfer file in sender-receiver style
 * 画像の転送
 	* 最新のFirefox, Chromeではバイナリ(Blob)を送信可能
 	* imgからBlobを作り出すことはできない?(Canvas経由)
+		* File, WebSocket, WebRTC, XHRのバイナリからは作成可能
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
