@@ -19,6 +19,16 @@ P2P file distribution using WebRTC
 3. pinger.htmlを開く
 4. ponger.htmlを開く
 
+### transfer-image
+transfer file in sender-receiver style
+
+1. `node server.js`でサーバ起動
+2. sender.htmlを開く
+3. receiver.htmlを開く
+4. sender側で画像を選択
+5. receiver側に送られる
+
+
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る
 	* ←→ファイルを分割して複数のユーザから受け取り高速読み込みを行う
@@ -35,7 +45,8 @@ P2P file distribution using WebRTC
 	* hashを付加することで怪しい画像は表示しないようにする
 	* 怪しい画像をよく送っている人を記録する
 * 画像の転送
-	* 最新のFirefox, Chromeではバイナリを送信可能
+	* 最新のFirefox, Chromeではバイナリ(Blob)を送信可能
+	* imgからBlobを作り出すことはできない?(Canvas経由)
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント

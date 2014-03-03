@@ -1,0 +1,30 @@
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script>
+	var peer = new Peer("sender", {host: "localhost", port: 9000, path: "/myapp"});
+	peer.on("open", function(id){
+		console.log("peer open: I am", id);
+	});
+	peer.on("error", function(data){
+		console.log("peer error", data);
+	})
+	var CONN;
+	peer.on('connection', function(conn) {
+		CONN = conn;
+		console.log("peer connection", conn);
+		conn.on("open", function(){
+			console.log("conn open");
+		});
+	});
+	function load(){
+		var files = document.getElementById("file").files;
+		if(CONN){
+			for(var i=0; i<files.length; i++){
+				CONN.send(files[i].slice());
+			}
+		}
+	}
+</script>
+
+1. Open this
+3. Select files
+<input type="file" id="file" onchange="load()" multiple>

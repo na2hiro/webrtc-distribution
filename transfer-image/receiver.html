@@ -1,0 +1,28 @@
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script>
+	var peer = new Peer("receiver", {host: "localhost", port: 9000, path: "/myapp"});
+	peer.on("open", function(id){
+		console.log("peer open: I am", id);
+	});
+	peer.on("error", function(data){
+		console.log("peer error", data);
+	})
+
+	var conn = peer.connect('sender');
+	peer.on('connection', function(conn) {
+		console.log("peer connection", conn);
+	});
+	conn.on('open', function(){
+		console.log("conn open");
+		conn.on("data",function(data){
+			var blobUrl = URL.createObjectURL(new Blob([data]));
+			var img = new Image();
+			img.src=blobUrl;
+			document.getElementById("images").appendChild(img);
+		});
+	});
+</script>
+
+2. Open this
+4. Then images are received and displayed
+<div id="images"></div>
