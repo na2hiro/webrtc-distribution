@@ -1,6 +1,6 @@
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script>
-	var peer = new Peer("ponger", {key: "jcd3ta98xqnwb3xr"});
+	var peer = new Peer({key: "jcd3ta98xqnwb3xr"});
 	peer.on("open", function(id){
 		console.log("peer open: I am", id);
 	});
@@ -8,7 +8,7 @@
 		console.log("peer error", data);
 	})
 
-	var conn = peer.connect('pinger');
+	var conn = peer.connect(prompt("imput his id"));
 	peer.on('connection', function(conn) {
 		console.log("peer connection", conn);
 	});

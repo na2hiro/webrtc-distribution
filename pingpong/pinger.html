@@ -1,14 +1,13 @@
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script>
-	var peer = new Peer("pinger", {key: "jcd3ta98xqnwb3xr"});
+	var peer = new Peer({key: "jcd3ta98xqnwb3xr"});
 	peer.on("open", function(id){
 		console.log("peer open: I am", id);
 	});
 	peer.on("error", function(data){
 		console.log("peer error", data);
 	})
-//	var conn = peer.connect('ponger');
-var CONN;
+	var CONN;
 	peer.on('connection', function(conn) {
 		CONN = conn;
 		console.log("peer connection", conn);
