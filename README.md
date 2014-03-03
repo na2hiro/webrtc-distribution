@@ -26,14 +26,14 @@ P2P file distribution using WebRTC
 		* Session Storage?
     
 ## ライブラリ
-* [Peerjs](peers/peerjs): P2Pクライアント
+* [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
 	* 今回はこれを使用
 	* WebSocket, XHRにフォールバックする
-* [PeerServer](peers/peerjs-server): peerjsの仲介サーバ
+* [PeerServer](https://github.com/peers/peerjs-server): peerjsの仲介サーバ
 	* 今のところpeerjs.comが提供しているクラウド(最大50ピアまで)を使用
 * [EasyRTC](http://easyrtc.com/)
 	* エンタプライズだとAndroid/iOS SDKがある
 	* ルーム機能
-* [webRTC.io](webRTC/webRTC.io)
+* [webRTC.io](https://github.com/webRTC/webRTC.io)
 	* 1年間更新がない
 	* ルーム機能
