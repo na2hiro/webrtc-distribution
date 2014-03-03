@@ -1,0 +1,24 @@
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script>
+	var peer = new Peer("pinger", {host: "localhost", port: 9000, path: "/myapp"});
+	peer.on("open", function(id){
+		console.log("peer open: I am", id);
+	});
+	peer.on("error", function(data){
+		console.log("peer error", data);
+	})
+	var CONN;
+	peer.on('connection', function(conn) {
+		CONN = conn;
+		console.log("peer connection", conn);
+		conn.on("open", function(){
+			conn.send('ping!!');
+		});
+		conn.on("data",function(data){
+			console.log("conn data", data);
+			setTimeout(function(){conn.send('ping')}, 1000);
+		});
+	});
+</script>
+
+I am waiting

@@ -3,7 +3,7 @@ P2P file distribution using WebRTC
 
 ## Files
 ### pingpong/
-2-user ping pong test
+2-user ping pong test. idを入力する必要があるのは複数の人が同じidを名乗るとマズいからです．
 
 1. pinger.htmlを開く
 2. idをコピる
@@ -12,12 +12,19 @@ P2P file distribution using WebRTC
 5. ピンポン開始
 
 ### pingpong-with-server
-2-user ping pong test with server
+2-user ping pong test with local server. ローカルサーバを使用し，connectionとdisconnectイベントは取ることができる(それ以外は何も出来ない？)
+
+1. 予め`npm install peer`しておく
+2. `node server.js`でサーバ起動
+3. pinger.htmlを開く
+4. ponger.htmlを開く
 
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る
 	* ←→ファイルを分割して複数のユーザから受け取り高速読み込みを行う
 * 誰がその画像を持っているかをサーバが把握するか，申告してもらう機構が必要
+	* そもそもどうやってサーバとクライアントがやりとりするのか？
+		* WebSocket貼る必要ある？
 * 一つのファイルがどれくらい同時に読まれているか
 	* 少なかったら意味が無いので，アクセス数の多い画像に限定して使うことになるかも
 		* サイト表示中は保持しておくことにすると，滞在時間中に他の人が表示するくらいの頻度で閲覧されている画像だと良い
