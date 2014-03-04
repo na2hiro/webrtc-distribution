@@ -2,11 +2,6 @@
 <script src="http://localhost:9001/socket.io/socket.io.js"></script>
 <script src="peerdist.js"></script>
 <script>
-	function safeSendPeerId(){
-		if(socket || peerid){
-			socket.emit("iam", peerid);
-		}
-	}
 	function ready(){
 		images["apple"]=document.getElementById("file").files[0].slice();
 		socket.emit("ready", {peerid:peerid, imageid:"apple"});

@@ -13,9 +13,10 @@ var peers = {}; // imageid=>[peerid]
 
 var io = require("socket.io").listen(9001);
 io.sockets.on('connection', function(socket){
-	var peerid;
-	socket.on("iam", function(_peerid){
-		peerid=_peerid;
+	socket.on("iam", function(peerid){
+		socket.set("peerid", peerid, function(){
+			console.log("he is ", peerid)
+		});
 		sockets[peerid]=socket;
 	});
 	socket.on("ids", function(id){
@@ -31,10 +32,14 @@ io.sockets.on('connection', function(socket){
 		console.log("peers(ready)", peers);
 	});
 	socket.on("disconnect", function(){
-		delete sockets[peerid];
-		for(var i in peers){
-			peers[i]=peers[i].filter(function(id){return id!=peerid});
-		}
-		console.log("peers(discon)", peers);
+		socket.get("peerid", function(err, peerid){
+			console.log("removing", peerid);
+			delete sockets[peerid];
+			for(var i in peers){
+				console.log("image", i, ":", peers[i]);
+				peers[i]=peers[i].filter(function(id){return id!=peerid});
+			}
+			console.log("peers(discon)", peers);
+		});
 	});
 });
