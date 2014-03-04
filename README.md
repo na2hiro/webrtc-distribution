@@ -28,6 +28,14 @@ transfer files in sender-receiver style
 4. sender側で画像を選択
 5. receiver側に送られる
 
+#### バイナリデータの流れ
+1. `<input type="file">`で選択され，`File`オブジェクトになる
+2. `File#slice()`で`Blob`オブジェクトになる
+3. `Blob`はPeerJSで送信可能
+4. `ArrayBuffer`で受信
+5. `new Blob([arrayBuffer])`で`Blob`オブジェクトになる
+6. `URL.createObjectURL(obj)`でURLが得られる
+7. `img.src`に設定
 
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る
