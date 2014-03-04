@@ -23,10 +23,8 @@ P2P file distribution using WebRTC
 transfer files in sender-receiver style
 
 1. `node server.js`でサーバ起動
-2. sender.htmlを開く
-3. receiver.htmlを開く
-4. sender側で画像を選択
-5. receiver側に送られる
+2. sender.htmlを開き画像を選択
+3. receiver.htmlを開くと送られる
 
 #### バイナリデータの流れ
 1. `<input type="file">`で選択され，`File`オブジェクトになる
@@ -40,10 +38,6 @@ transfer files in sender-receiver style
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る
 	* ←→ファイルを分割して複数のユーザから受け取り高速読み込みを行う
-* 誰がその画像を持っているかをサーバが把握するか，申告してもらう機構が必要
-	* そもそもどうやってサーバとクライアントがやりとりするのか？
-		* [auth目的のpreprocessのissue](https://github.com/peers/peerjs-server/pull/10)はあるがまだ実装されていない
-		* WebSocket貼る必要ある？
 * 一つのファイルがどれくらい同時に読まれているか
 	* 少なかったら意味が無いので，アクセス数の多い画像に限定して使うことになるかも
 		* サイト表示中は保持しておくことにすると，滞在時間中に他の人が表示するくらいの頻度で閲覧されている画像だと良い
@@ -57,6 +51,20 @@ transfer files in sender-receiver style
 	* 最新のFirefox, Chromeではバイナリ(Blob)を送信可能
 	* imgからBlobを作り出すことはできない?(Canvas経由)
 		* File, WebSocket, WebRTC, XHRのバイナリからは作成可能
+		
+### サーバとのやりとり
+誰がその画像を持っているかをサーバが把握するか，申告してもらう機構が必要
+
+* そもそもどうやってサーバとクライアントがやりとりするのか？
+	* [auth目的のpreprocessのissue](https://github.com/peers/peerjs-server/pull/10)はあるがまだ実装されていない
+* WebSocket貼る必要ありそう
+		
+### 画像頒布戦略
+* simple
+	* 同じ画像を見ている人がいたらその人たちから貰う
+	* 頻繁にページ遷移されると送っている最中に切断されることが多発しそう
+		* ViewをAjax遷移にする必要あり？
+		* デイリーランキング等表示するものが決まっているものについてはページ遷移なしで1ページで表示できるようにする？
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント

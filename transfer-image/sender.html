@@ -13,18 +13,14 @@
 		console.log("peer connection", conn);
 		conn.on("open", function(){
 			console.log("conn open");
-		});
-	});
-	function load(){
-		var files = document.getElementById("file").files;
-		if(CONN){
+			var files = document.getElementById("file").files;
 			for(var i=0; i<files.length; i++){
 				CONN.send(files[i].slice());
 			}
-		}
-	}
+		});
+	});
 </script>
 
 1. Open this
-3. Select files
-<input type="file" id="file" onchange="load()" multiple>
+2. Select files
+<input type="file" id="file" multiple>

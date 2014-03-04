@@ -1,6 +1,6 @@
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script>
-	var peer = new Peer("receiver", {host: "localhost", port: 9000, path: "/myapp"});
+	var peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
 	peer.on("open", function(id){
 		console.log("peer open: I am", id);
 	});
@@ -23,6 +23,6 @@
 	});
 </script>
 
-2. Open this
+3. Open this
 4. Then images are received and displayed
 <div id="images"></div>
