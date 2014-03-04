@@ -1,0 +1,18 @@
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script src="http://localhost:9001/socket.io/socket.io.js"></script>
+<script src="peerdist.js"></script>
+<script>
+	function safeSendPeerId(){
+		if(socket || peerid){
+			socket.emit("iam", peerid);
+		}
+	}
+	function ready(){
+		images["apple"]=document.getElementById("file").files[0].slice();
+		socket.emit("ready", {peerid:peerid, imageid:"apple"});
+	}
+</script>
+
+1. Open this
+2. Select files (to be ready to send)
+<input type="file" id="file" onchange="ready()">

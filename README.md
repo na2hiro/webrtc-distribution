@@ -35,6 +35,14 @@ transfer files in sender-receiver style
 6. `URL.createObjectURL(obj)`でURLが得られる
 7. `img.src`に設定
 
+### simple-distribution
+1つの画像を配る
+
+1. `node server.js`
+2. superuser.htmlを開き画像を選択する
+3. client.htmlを開くと生きてる人たちから送られる
+4. 何度でも
+
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る → pingpong
 	* ←→ファイルを分割して複数のユーザから受け取り高速読み込みを行う
@@ -58,11 +66,12 @@ transfer files in sender-receiver style
 		
 ### 画像頒布戦略
 * simple
-	* WebSocketでサーバにほしい画像idを送る
-	* 誰も持っていない場合，直接貰う
-	* 誰かが持っている場合，数人のidを受け取って彼らから貰う
-		* 時間がかかったり断られたりしたら順にずらす
-	* n秒以内に誰からも貰えなかったらサーバから貰う
+	* peerとsocketの生存タイミングは同時と仮定
+	* WebSocketでサーバにほしい画像idを送る(WS →ids 画像ID)
+	* 誰かが持っている場合，数人のidを受け取って彼らから貰う(WS ←ids 画像ID, ピアID)
+		* 時間がかかったり断られたりしたら順に試す
+	* {誰も持ってなかったら/n秒以内に誰からも貰えなかったら}サーバから貰う (WS →raw ←raw)
+	* 無事得られたら送信者になる(WS →ready ピアID, 画像ID)
 	* ページ遷移しないで表示できるUI
 		* 頻繁にページ遷移されると送っている最中に切断されることが多発しそうなため
 		* デイリーランキング等表示するものが決まっているもの？
