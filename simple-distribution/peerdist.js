@@ -13,7 +13,7 @@ peer.on("error", function(data){
 // 送信時
 peer.on("connection", function(conn){
 	conn.on("data", function(id){
-		console.log("nansuka", id);
+		console.log("he needs", id);
 		conn.send(images[id]);
 	});
 });
@@ -22,9 +22,17 @@ var socket = io.connect("http://localhost:9001");
 // 受信時
 socket.on("ids", function(data){
 	safeSendPeerId();
-	console.log(data.imageid, "は", data.peerids, "さんたちがもってる")
-	data.peerids.forEach(function(pid){
+	console.log(data.imageid, "は", data.peerids.join(", "), "さんたちがもってる")
+	var ids = data.peerids;
+	nextFetch();
+	function nextFetch(){
+		var pid = ids.pop();
 		var conn = peer.connect(pid);
+		CONN = conn;
+		conn.on("error", function(err){
+			console.log("error", err);
+			nextFetch();
+		})
 		conn.on("open", function(){
 			console.log("giveme", data.imageid, pid);
 			conn.send(data.imageid);
@@ -36,9 +44,10 @@ socket.on("ids", function(data){
 				document.body.appendChild(img)
 				console.log("ready", peerid, data.imageid);
 				socket.emit("ready", {peerid: peerid, imageid: data.imageid});
+				conn.close();
 			});
 		});
-	});
+	}
 });
 function safeSendPeerId(){
 	if(socket && peerid!=""){

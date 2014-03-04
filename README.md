@@ -80,6 +80,10 @@ transfer files in sender-receiver style
 	* 受信者に送信者idとハッシュを送る
 	* 送信者から得た画像のハッシュをとり確かめてから表示する
 	* 怪しいデータを送る人を報告？
+* あり得る問題
+	* なかなか送られてこない(タイムアウト)
+	* peerに接続できない
+	* 画像を持っている人が誰もいなくなった
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
@@ -93,6 +97,7 @@ transfer files in sender-receiver style
 * [webRTC.io](https://github.com/webRTC/webRTC.io)
 	* 1年間更新がない
 	* ルーム機能
+* [md5.js](http://blog.faultylabs.com/?d=md5)
 
 ## References
 * [FileとWebの関係をもっと知る Blob, FileそしてFileSystem API](https://docs.google.com/presentation/d/1zwNaA0N7SNaIRc3rckEb_bSBsfWCw4Yg-UQgjgWRoVI/present#slide=id.i0): バイナリの扱い
