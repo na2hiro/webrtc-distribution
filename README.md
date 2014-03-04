@@ -42,6 +42,7 @@ transfer files in sender-receiver style
 	* ←→ファイルを分割して複数のユーザから受け取り高速読み込みを行う
 * 誰がその画像を持っているかをサーバが把握するか，申告してもらう機構が必要
 	* そもそもどうやってサーバとクライアントがやりとりするのか？
+		* [auth目的のpreprocessのissue](https://github.com/peers/peerjs-server/pull/10)はあるがまだ実装されていない
 		* WebSocket貼る必要ある？
 * 一つのファイルがどれくらい同時に読まれているか
 	* 少なかったら意味が無いので，アクセス数の多い画像に限定して使うことになるかも
@@ -72,3 +73,7 @@ transfer files in sender-receiver style
 
 ## References
 * [FileとWebの関係をもっと知る Blob, FileそしてFileSystem API](https://docs.google.com/presentation/d/1zwNaA0N7SNaIRc3rckEb_bSBsfWCw4Yg-UQgjgWRoVI/present#slide=id.i0): バイナリの扱い
+* [PeerCDN](https://peercdn.com/): WebRTCを用いたP2Pコンテンツ頒布サービス
+	* 最近Yahooに買収されたらしい
+	* Graceful fallback, ピアが少なければ通常の配布, SHA1ハッシュによる改ざん防止, 暗号化通信, P2P遅ければ通常の取得など
+	* 理想に近い
