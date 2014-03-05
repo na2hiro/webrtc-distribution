@@ -80,7 +80,7 @@ transfer files in sender-receiver style
 	* 受信者に送信者idとハッシュを送る
 	* 送信者から得た画像のハッシュをとり確かめてから表示する
 	* 怪しいデータを送る人を報告？
-* あり得る問題
+* 画像が受け取れない事例
 	* 画像を持っている人が誰もいない(→サーバが直接送る)
 	* ✓peerに接続できない(直前に去った)
 		* noisyserver.jsはノイズ(ダミー)ピアIDを混ぜて送る
@@ -92,6 +92,11 @@ transfer files in sender-receiver style
 		* slowclient.htmlはデータをなかなか送らない
 * 速度
 	* socket接続開始時にRound Trip Timeを計測し活用
+	* 複数のidに同時に接続し一番早い人から貰う？
+* 複数画像(ランキングページそのもので使用)
+	* idとともに送って判別
+	* 複数人から貰う
+		* 早い人に多く送ってもらう？
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
