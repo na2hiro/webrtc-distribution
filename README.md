@@ -83,6 +83,10 @@ transfer files in sender-receiver style
 * あり得る問題
 	* 画像を持っている人が誰もいない(→サーバが直接送る)
 	* peerに接続できない(直前に去った)
+		* noisyserver.jsはノイズピアIDを混ぜて送る
+		* peerにつながらないエラーはDataConnection#on('error')ではなくPeer#on('error')で来る
+			* peerid=>imageidテーブルを保持
+		* 結果: 1ノイズピアごとにエラーが出るまで2秒ほど経過する
 	* peerに接続できたがなかなか送られてこない(タイムアウト)
     
 ## Libraries
