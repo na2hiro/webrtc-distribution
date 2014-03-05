@@ -1,8 +1,9 @@
 function DistPeer(){}
 DistPeer.prototype.initialize = function(){
-	this.images={};
+	this.images={}; // imageid=>Blob
 	this.callbacks={}; // imageid=>callback
 	this.peers = {}; // imageid=>[peerid]
+	this.timers = {}; // imageid=>Timer
 	this.tryingimages = {};// peerid=>imageid
 	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
 	this.socket = io.connect("http://localhost:9001");
@@ -33,10 +34,13 @@ DistPeer.prototype.prepareReceiving = function(){
 		this.fetchNext(data.imageid);
 	}.bind(this));
 	this.peer.on("error", function(data){
+		// peerにつながらなかった
 		console.log("peer error", data);
 		var match = data.message.match(this.PEER_ERROR_MESSAGE_REGEXP);
 		if(match){
-			this.fetchNext(this.tryingimages[match[1]]);
+			var imageid = this.tryingimages[match[1]];
+			this.clearTimer(imageid);
+			this.fetchNext(imageid);
 		}
 	}.bind(this));
 };
@@ -59,6 +63,11 @@ DistPeer.prototype.fetchNext = function(imageid){
 	}
 	this.tryingimages[pid] = imageid;
 	var conn = this.peer.connect(pid);
+	this.setTimer(imageid, function(){
+		console.log("timeout: ピアにつながらなかった");
+		conn.close();
+		this.fetchNext(imageid);
+	}.bind(this), 1000);
 	CONN = conn;
 	conn.on("error", function(err){
 		// 無効なpeer idの場合ここにはこない (どういう時に来るの？)
@@ -67,8 +76,15 @@ DistPeer.prototype.fetchNext = function(imageid){
 	}.bind(this))
 	conn.on("open", function(){
 		console.log("giveme", imageid, pid);
+		var got=false;
+		this.setTimer(imageid, function(){
+			console.log("timeout: つながったけどデータがこない");
+			conn.close();
+			this.fetchNext(imageid);
+		}.bind(this), 1000);
 		conn.send(imageid);
 		conn.on("data", function(buf){
+			this.clearTimer(imageid);
 			var blob = new Blob([buf]);
 			this.callbacks[imageid](blob);
 			this.addImage(imageid, blob);
@@ -77,7 +93,20 @@ DistPeer.prototype.fetchNext = function(imageid){
 	}.bind(this));
 };
 DistPeer.prototype.addImage = function(imageid, blob){
+	console.log("clearTimer");
 	console.log("ready", imageid);
 	this.images[imageid] = blob;
 	this.socket.emit("ready", {peerid:this.peer.id, imageid:imageid});
 };
+DistPeer.prototype.setTimer = function(imageid, callback, millis){
+	console.log("setTimer", millis);
+	this.clearTimer(imageid);
+	this.timers[imageid] = setTimeout(callback, millis);
+};
+DistPeer.prototype.clearTimer = function(imageid){
+	if(this.timers[imageid]){
+		clearTimeout(this.timers[imageid]);
+		delete this.timers[imageid];
+	}
+};
+setInterval(function(){console.log("uhyohyo")}, 500)

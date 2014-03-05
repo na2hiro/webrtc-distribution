@@ -86,10 +86,17 @@ transfer files in sender-receiver style
 		* noisyserver.jsはノイズ(ダミー)ピアIDを混ぜて送る
 		* peerにつながらないエラーはDataConnection#on('error')ではなくPeer#on('error')で来る
 			* peerid=>imageidテーブルを保持
-		* 結果: 1ノイズピアごとにエラーが出るまで2秒ほど経過する
-			* →早めにタイムアウトしたほうが良さそう
-	* peerに接続できたがなかなか送られてこない(タイムアウト)
+		* 結果: 1ノイズピアごとにエラーが出るまで5秒ほど経過する
+			* →早めにタイムアウトしたほうが良さそう(→接続前タイムアウト)
+	* peerに接続できたがなかなか送られてこない(→接続後タイムアウト)
 		* slowclient.htmlはデータをなかなか送らない
+* ✓タイムアウト
+	* 接続前
+		* 発生時: peer.connect
+		* 撤回時: conn.on("open")
+	* 接続後
+		* 発生時: conn.on("open")
+		* 撤回時: conn.on("data")
 * 速度
 	* socket接続開始時にRound Trip Timeを計測し活用
 	* 複数のidに同時に接続し一番早い人から貰う？
