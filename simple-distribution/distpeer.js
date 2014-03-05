@@ -34,11 +34,11 @@ DistPeer.prototype.prepareReceiving = function(){
 	}.bind(this));
 	this.peer.on("error", function(data){
 		console.log("peer error", data);
-		var match = data.message.match(PEER_ERROR_MESSAGE_REGEXP);
+		var match = data.message.match(this.PEER_ERROR_MESSAGE_REGEXP);
 		if(match){
-			this.fetchNext(tryingimages[match[1]]);
+			this.fetchNext(this.tryingimages[match[1]]);
 		}
-	})
+	}.bind(this));
 };
 DistPeer.prototype.getImage = function(id, callback){
 	this.socket.emit("ids", id);
