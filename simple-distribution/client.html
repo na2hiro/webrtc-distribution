@@ -3,7 +3,13 @@
 <script src="peerdist.js"></script>
 <script>
 	// 受信
-	socket.emit("ids", "apple");
+	var p = new DistPeer();
+	p.initialize();
+	p.getImage("apple", function(blob){
+		var img = new Image();
+		img.src = URL.createObjectURL(blob);
+		document.body.appendChild(img);
+	});
 </script>
 
 3. Open this then get images

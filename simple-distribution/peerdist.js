@@ -1,73 +1,83 @@
-var peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
-var peerid="";
-var images={};
-var PEER_ERROR_MESSAGE_REGEXP = /^Could not connect to peer (.*)$/;
-peer.on("open", function(id){
-	console.log("peer open: I am", id);
-	peerid=id;
-	safeSendPeerId();
-});
-peer.on("error", function(data){
-	console.log("peer error", data);
-	var match = data.message.match(PEER_ERROR_MESSAGE_REGEXP);
-	if(match){
-		fetchNext(tryingimages[match[1]]);
+function DistPeer(){}
+DistPeer.prototype.initialize = function(){
+	this.images={};
+	this.callbacks={}; // imageid=>callback
+	this.peers = {}; // imageid=>[peerid]
+	this.tryingimages = {};// peerid=>imageid
+	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
+	this.socket = io.connect("http://localhost:9001");
+	this.peer.on("open", function(id){
+		console.log("peer open: I am", id);
+		this.safeSendPeerId();
+	}.bind(this));
+	this.prepareReceiving();
+	this.prepareSending();
+};
+
+DistPeer.prototype.PEER_ERROR_MESSAGE_REGEXP = /^Could not connect to peer (.*)$/;
+DistPeer.prototype.prepareSending = function(){
+	// 送信時
+	this.peer.on("connection", function(conn){
+		conn.on("data", function(id){
+			console.log("he needs", id);
+			conn.send(this.images[id]);
+		}.bind(this));
+	}.bind(this));
+};
+DistPeer.prototype.prepareReceiving = function(){
+	// 受信時
+	this.socket.on("ids", function(data){
+		this.safeSendPeerId();
+		console.log(data.imageid, "は", data.peerids.join(", "), "さんたちがもってる")
+		this.peers[data.imageid] = data.peerids;
+		this.fetchNext(data.imageid);
+	}.bind(this));
+	this.peer.on("error", function(data){
+		console.log("peer error", data);
+		var match = data.message.match(PEER_ERROR_MESSAGE_REGEXP);
+		if(match){
+			this.fetchNext(tryingimages[match[1]]);
+		}
+	})
+};
+DistPeer.prototype.getImage = function(id, callback){
+	this.socket.emit("ids", id);
+	this.callbacks[id]=callback;
+};
+DistPeer.prototype.safeSendPeerId = function(){
+	if(this.socket && this.peer && this.peer.disconnected){
+		console.log("I am", this.peer.id);
+		this.socket.emit("iam", this.peer.id);
 	}
-})
-
-// 送信時
-peer.on("connection", function(conn){
-	conn.on("data", function(id){
-		console.log("he needs", id);
-		conn.send(images[id]);
-	});
-});
-var socket = io.connect("http://localhost:9001");
-
-
-var peers = {}; // imageid=>[peerid]
-var tryingimages = {};// peerid=>imageid
-
-// 受信時
-socket.on("ids", function(data){
-	safeSendPeerId();
-	console.log(data.imageid, "は", data.peerids.join(", "), "さんたちがもってる")
-	peers[data.imageid] = data.peerids;
-	fetchNext(data.imageid);
-});
-function safeSendPeerId(){
-	if(socket && peerid!=""){
-		console.log("I am", peerid);
-		socket.emit("iam", peerid);
-	}
-}
-function fetchNext(imageid){
+};
+DistPeer.prototype.fetchNext = function(imageid){
 	console.log("fetch", imageid);
-	var pid = peers[imageid].pop();
+	var pid = this.peers[imageid].pop();
 	if(!pid){
 		console.log("no one has image", imageid);
 		return;
 	}
-	tryingimages[pid] = imageid;
-	var conn = peer.connect(pid);
+	this.tryingimages[pid] = imageid;
+	var conn = this.peer.connect(pid);
 	CONN = conn;
 	conn.on("error", function(err){
 		// 無効なpeer idの場合ここにはこない (どういう時に来るの？)
 		console.log("error", err);
-		fetchNext();
-	})
+		this.fetchNext();
+	}.bind(this))
 	conn.on("open", function(){
 		console.log("giveme", imageid, pid);
 		conn.send(imageid);
 		conn.on("data", function(buf){
-			var img = new Image();
 			var blob = new Blob([buf]);
-			images[imageid] = blob;
-			img.src = URL.createObjectURL(blob);
-			document.body.appendChild(img);
-			console.log("ready", peerid, imageid);
-			socket.emit("ready", {peerid: peerid, imageid: imageid});
+			this.callbacks[imageid](blob);
+			this.addImage(imageid, blob);
 			conn.close();
-		});
-	});
-}
+		}.bind(this));
+	}.bind(this));
+};
+DistPeer.prototype.addImage = function(imageid, blob){
+	console.log("ready", imageid);
+	this.images[imageid] = blob;
+	this.socket.emit("ready", {peerid:this.peer.id, imageid:imageid});
+};

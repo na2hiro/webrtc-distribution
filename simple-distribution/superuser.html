@@ -2,9 +2,10 @@
 <script src="http://localhost:9001/socket.io/socket.io.js"></script>
 <script src="peerdist.js"></script>
 <script>
+	var p = new DistPeer();
+	p.initialize();
 	function ready(){
-		images["apple"]=document.getElementById("file").files[0].slice();
-		socket.emit("ready", {peerid:peerid, imageid:"apple"});
+		p.addImage("apple", document.getElementById("file").files[0].slice());
 	}
 </script>
 

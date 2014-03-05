@@ -88,6 +88,7 @@ transfer files in sender-receiver style
 			* peerid=>imageidテーブルを保持
 		* 結果: 1ノイズピアごとにエラーが出るまで2秒ほど経過する
 	* peerに接続できたがなかなか送られてこない(タイムアウト)
+		* slowclient.htmlはデータをなかなか送らない
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
