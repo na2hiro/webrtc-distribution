@@ -82,13 +82,16 @@ transfer files in sender-receiver style
 	* 怪しいデータを送る人を報告？
 * あり得る問題
 	* 画像を持っている人が誰もいない(→サーバが直接送る)
-	* peerに接続できない(直前に去った)
-		* noisyserver.jsはノイズピアIDを混ぜて送る
+	* ✓peerに接続できない(直前に去った)
+		* noisyserver.jsはノイズ(ダミー)ピアIDを混ぜて送る
 		* peerにつながらないエラーはDataConnection#on('error')ではなくPeer#on('error')で来る
 			* peerid=>imageidテーブルを保持
 		* 結果: 1ノイズピアごとにエラーが出るまで2秒ほど経過する
+			* →早めにタイムアウトしたほうが良さそう
 	* peerに接続できたがなかなか送られてこない(タイムアウト)
 		* slowclient.htmlはデータをなかなか送らない
+* 速度
+	* socket接続開始時にRound Trip Timeを計測し活用
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
@@ -106,7 +109,9 @@ transfer files in sender-receiver style
 
 ## References
 * [FileとWebの関係をもっと知る Blob, FileそしてFileSystem API](https://docs.google.com/presentation/d/1zwNaA0N7SNaIRc3rckEb_bSBsfWCw4Yg-UQgjgWRoVI/present#slide=id.i0): バイナリの扱い
-* [PeerCDN](https://peercdn.com/): WebRTCを用いたP2Pコンテンツ頒布サービス
+* [PeerCDN](https://peercdn.com/): WebRTCを用いたP2P CDN(コンテンツ頒布ネットワーク)
 	* 最近Yahooに買収されたらしい
 	* Graceful fallback, ピアが少なければ通常の配布, SHA1ハッシュによる改ざん防止, 暗号化通信, P2P遅ければ通常の取得など
 	* 理想に近い
+* [P2Pコンテンツ配信ネットワークシステムの検討および実装](http://biblio.yamanaka.ics.keio.ac.jp/file/pnws_0803_tsuji.pdf): P2P CDNの検討
+	* サーバとのRTT(Round Trip Time)の短い順を提示(接続数制限)
