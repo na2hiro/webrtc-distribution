@@ -36,12 +36,12 @@ transfer files in sender-receiver style
 7. `img.src`に設定
 
 ### simple-distribution
-1つの画像を配る
+1つの画像を配る．superuserが最初に提供できる．
 
 1. `node server.js`
 2. superuser.htmlを開き画像を選択する
 3. client.htmlを開くと生きてる人たちから送られる
-4. 何度でも
+4. superuserがいなくても，何度でも
 
 ## Memo
 * とりあえず1つのファイルを1人の人から受け取るサンプルを作る → pingpong
@@ -81,9 +81,9 @@ transfer files in sender-receiver style
 	* 送信者から得た画像のハッシュをとり確かめてから表示する
 	* 怪しいデータを送る人を報告？
 * あり得る問題
-	* なかなか送られてこない(タイムアウト)
-	* peerに接続できない
-	* 画像を持っている人が誰もいなくなった
+	* 画像を持っている人が誰もいない(→サーバが直接送る)
+	* peerに接続できない(直前に去った)
+	* peerに接続できたがなかなか送られてこない(タイムアウト)
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
