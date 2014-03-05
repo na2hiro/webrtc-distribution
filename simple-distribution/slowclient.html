@@ -3,7 +3,19 @@
 <script src="distpeer.js"></script>
 <script>
 	// 受信
-	var p = new DistPeer();
+	function SlowDistPeer(){
+	}
+	SlowDistPeer.prototype = new DistPeer();
+	SlowDistPeer.prototype.prepareSending = function(){
+		// 送信時
+		this.peer.on("connection", function(conn){
+			conn.on("data", function(id){
+				console.log("he needs", id, "but i do nothing");
+				/*conn.send(images[id]);*/
+			});
+		});
+	};
+	var p = new SlowDistPeer();
 	p.initialize();
 	p.getImage("apple", function(blob){
 		var img = new Image();
