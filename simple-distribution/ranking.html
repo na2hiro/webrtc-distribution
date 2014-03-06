@@ -10,10 +10,16 @@
 <script src="distpeer.js"></script>
 </head>
 <body>
+	<div>サーバから:<span id="server">0</span> ユーザから:<span id="user"></span> タイムアウト:<span id="timeout"></span></div>
 <table id="table"></table>
 <script>
 	var p = new DistPeer();
 	p.initialize();
+	p.onincrement = function(){
+		document.getElementById("server").textContent = this.counts.fromserver;
+		document.getElementById("user").textContent = this.counts.frompeer;
+		document.getElementById("timeout").textContent = this.counts.timeout;
+	};
 	var table = document.getElementById("table");
 	var num = 0;
 	for(var i=0; i<Math.ceil(50/3); i++){

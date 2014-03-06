@@ -6,6 +6,7 @@ DistPeer.prototype.initialize = function(){
 	this.timers = {}; // imageid=>Timer
 	this.tryingimages = {};// peerid=>[imageid]
 	this.conns = {} // peerid=>DataConnection
+	this.counts = {timeout: 0, frompeer: 0, fromserver: 0};
 	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
 	this.socket = io.connect("http://localhost:9001");
 	this.peer.on("open", function(id){
@@ -42,6 +43,7 @@ DistPeer.prototype.prepareReceiving = function(){
 			var blob = new Blob([buf]);
 			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
+			this.increment("fromserver");
 		}.bind(this));
 		
 	}.bind(this));
@@ -97,6 +99,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 			var blob = new Blob([image.buf]);
 			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
+			this.increment("frompeer");
 			// もうこのピアから貰うものがなければ切る
 			this.tryingimages[pid]=this.tryingimages[pid].filter(function(iid){return iid!=image.id;});
 			if(this.tryingimages[pid].length==0){
@@ -117,6 +120,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 	}
 	this.setTimer(imageid, function(){
 		console.log("timeout: ピアにつながらなかった");
+		this.increment("timeout");
 		conn.close();
 		this.fetchNext(imageid);
 	}.bind(this), 1000);
@@ -125,6 +129,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 		console.log("giveme", imageid, pid);
 		that.setTimer(imageid, function(){
 			console.log("timeout: つながったけどデータがこない");
+			this.counts.timeout++;
 			conn.close();
 			that.fetchNext(imageid);
 		}.bind(that), 1000);
@@ -146,6 +151,12 @@ DistPeer.prototype.clearTimer = function(imageid){
 	if(this.timers[imageid]){
 		clearTimeout(this.timers[imageid]);
 		delete this.timers[imageid];
+	}
+};
+DistPeer.prototype.increment = function(name){
+	this.counts[name]++;
+	if(this.onincrement){
+		this.onincrement();
 	}
 };
 setInterval(function(){console.log("uhyohyo")}, 500)
