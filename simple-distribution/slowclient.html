@@ -22,7 +22,7 @@
 	};
 	var p = new SlowDistPeer();
 	p.initialize();
-	p.getImage("apple", function(blob){
+	p.getImage("apple.png", function(err, blob){
 		var img = new Image();
 		img.src = URL.createObjectURL(blob);
 		document.body.appendChild(img);
