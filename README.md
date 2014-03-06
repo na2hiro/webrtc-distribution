@@ -76,7 +76,7 @@ transfer files in sender-receiver style
 		* 頻繁にページ遷移されると送っている最中に切断されることが多発しそうなため
 		* デイリーランキング等表示するものが決まっているもの？
 * 画像が受け取れない事例
-	* 画像を持っている人が誰もいない(→サーバが直接送る)
+	* ** 画像を持っている人が誰もいない(→サーバが直接送る) **
 	* ✓peerに接続できない(直前に去った)
 		* noisyserver.jsはノイズ(ダミー)ピアIDを混ぜて送る
 		* peerにつながらないエラーはDataConnection#on('error')ではなくPeer#on('error')で来る
@@ -106,6 +106,10 @@ transfer files in sender-receiver style
 	* 受信者に送信者idとハッシュを送る
 	* 送信者から得た画像のハッシュをとり確かめてから表示する
 	* 怪しいデータを送る人を報告？
+	
+### バッチ
+* crawler.js: ランキングページからHTMLを取って来てranking.htmlに書く
+* extractImageIds: ranking.htmlから画像URLを抜き出しJSファイルにし，画像をpublicにDL
     
 ## Libraries
 * [Peerjs](https://github.com/peers/peerjs): P2Pクライアント
