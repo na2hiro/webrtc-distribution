@@ -23,9 +23,9 @@
 	};
 	var p = new SlowDistPeer();
 	p.initialize();
-	p.getImage("apple.png", function(err, blob){
+	p.getImage("apple.png", function(err, image){
 		var img = new Image();
-		img.src = URL.createObjectURL(blob);
+		img.src = URL.createObjectURL(image.blob);
 		document.body.appendChild(img);
 	});
 </script>

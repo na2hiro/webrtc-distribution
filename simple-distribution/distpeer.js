@@ -34,12 +34,12 @@ DistPeer.prototype.prepareReceiving = function(){
 		this.fetchNext(data.imageid);
 	}.bind(this));
 	this.socket.on("err", function(data){
-		this.callbacks[data.imageid](true, data.message);
+		this.callbacks[data.imageid](data.message);
 	}.bind(this));
 	this.socket.on("raw", function(image){
 		Base64_To_ArrayBuffer_Async(image.base64, function(buf){
 			var blob = new Blob([buf]);
-			this.callbacks[image.id](false, blob);
+			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
 		}.bind(this));
 		
@@ -98,7 +98,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 		conn.on("data", function(image){
 			this.clearTimer(image.id);
 			var blob = new Blob([image.buf]);
-			this.callbacks[image.id](false, blob);
+			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
 			conn.close();
 		}.bind(this));

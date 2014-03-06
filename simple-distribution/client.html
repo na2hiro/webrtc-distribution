@@ -11,10 +11,10 @@
 	// 受信
 	var p = new DistPeer();
 	p.initialize();
-	p.getImage("apple.png", function(err, blob){
+	p.getImage("apple.png", function(err, image){
 		if(err){console.err(err);return;}
 		var img = new Image();
-		img.src = URL.createObjectURL(blob);
+		img.src = URL.createObjectURL(image.blob);
 		document.body.appendChild(img);
 	});
 </script>
