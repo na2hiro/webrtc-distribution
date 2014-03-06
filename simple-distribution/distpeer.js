@@ -7,6 +7,7 @@ DistPeer.prototype.initialize = function(){
 	this.tryingimages = {};// peerid=>[imageid]
 	this.conns = {} // peerid=>DataConnection
 	this.counts = {timeout: 0, frompeer: 0, fromserver: 0};
+	this.peercounts= {};
 	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
 	this.socket = io.connect("http://localhost:9001");
 	this.peer.on("open", function(id){
@@ -32,7 +33,7 @@ DistPeer.prototype.prepareReceiving = function(){
 	this.socket.on("ids", function(data){
 		this.safeSendPeerId();
 		console.log(data.imageid, "は", data.peerids.join(", "), "さんたちがもってる")
-		this.peers[data.imageid] = data.peerids;
+		this.peers[data.imageid] = data.peerids.shuffle();
 		this.fetchNext(data.imageid);
 	}.bind(this));
 	this.socket.on("err", function(data){
@@ -100,6 +101,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
 			this.increment("frompeer");
+			this.incrementPeer(pid);
 			// もうこのピアから貰うものがなければ切る
 			this.tryingimages[pid]=this.tryingimages[pid].filter(function(iid){return iid!=image.id;});
 			if(this.tryingimages[pid].length==0){
@@ -123,13 +125,13 @@ DistPeer.prototype.fetchNext = function(imageid){
 		this.increment("timeout");
 		conn.close();
 		this.fetchNext(imageid);
-	}.bind(this), 1000);
+	}.bind(this), 3000);
 	this.tryingimages[pid].push(imageid);
 	function start(that){
 		console.log("giveme", imageid, pid);
 		that.setTimer(imageid, function(){
 			console.log("timeout: つながったけどデータがこない");
-			this.counts.timeout++;
+			this.increment("timeout");
 			conn.close();
 			that.fetchNext(imageid);
 		}.bind(that), 1000);
@@ -159,4 +161,21 @@ DistPeer.prototype.increment = function(name){
 		this.onincrement();
 	}
 };
+DistPeer.prototype.incrementPeer = function(peerid){
+	this.peercounts[peerid] = (this.peercounts[peerid]||0)+1;
+	if(this.onincrementpeer){
+		this.onincrementpeer();
+	}
+};
 setInterval(function(){console.log("uhyohyo")}, 500)
+
+Array.prototype.shuffle = function() {
+    var i = this.length;
+    while(i){
+        var j = Math.floor(Math.random()*i);
+        var t = this[--i];
+        this[i] = this[j];
+        this[j] = t;
+    }
+    return this;
+}

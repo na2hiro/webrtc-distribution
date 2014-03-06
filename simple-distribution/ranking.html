@@ -10,7 +10,8 @@
 <script src="distpeer.js"></script>
 </head>
 <body>
-	<div>サーバから:<span id="server">0</span> ユーザから:<span id="user"></span> タイムアウト:<span id="timeout"></span></div>
+	<div>サーバから:<span id="server">0</span> ユーザから:<span id="user"></span> 再接続:<span id="timeout"></span></div>
+	<div id="users"></div>
 <table id="table"></table>
 <script>
 	var p = new DistPeer();
@@ -19,6 +20,13 @@
 		document.getElementById("server").textContent = this.counts.fromserver;
 		document.getElementById("user").textContent = this.counts.frompeer;
 		document.getElementById("timeout").textContent = this.counts.timeout;
+	};
+	p.onincrementpeer = function(){
+		var res = "";
+		for(var i in this.peercounts){
+			res+=i+": "+this.peercounts[i]+", ";
+		}
+		document.getElementById("users").textContent = res;
 	};
 	var table = document.getElementById("table");
 	var num = 0;
