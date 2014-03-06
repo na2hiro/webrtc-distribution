@@ -1,3 +1,8 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>super client</title>
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script src="http://localhost:9001/socket.io/socket.io.js"></script>
 <script src="distpeer.js"></script>
@@ -8,7 +13,10 @@
 		p.addImage("apple", document.getElementById("file").files[0].slice());
 	}
 </script>
-
+</head>
+<body>
 1. Open this
 2. Select files (to be ready to send)
 <input type="file" id="file" onchange="ready()">
+</body>
+</html>
