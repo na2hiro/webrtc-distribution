@@ -17,6 +17,12 @@
 		img.src = URL.createObjectURL(image.blob);
 		document.body.appendChild(img);
 	});
+	p.getImage("bananas.jpg", function(err, image){
+		if(err){console.err(err);return;}
+		var img = new Image();
+		img.src = URL.createObjectURL(image.blob);
+		document.body.appendChild(img);
+	});
 </script>
 </head>
 <body>
