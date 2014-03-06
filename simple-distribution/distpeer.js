@@ -33,6 +33,17 @@ DistPeer.prototype.prepareReceiving = function(){
 		this.peers[data.imageid] = data.peerids;
 		this.fetchNext(data.imageid);
 	}.bind(this));
+	this.socket.on("err", function(data){
+		this.callbacks[data.imageid](true, data.message);
+	}.bind(this));
+	this.socket.on("raw", function(image){
+		Base64_To_ArrayBuffer_Async(image.base64, function(buf){
+			var blob = new Blob([buf]);
+			this.callbacks[image.id](false, blob);
+			this.addImage(image.id, blob);
+		}.bind(this));
+		
+	}.bind(this));
 	this.peer.on("error", function(data){
 		// peerにつながらなかった
 		console.log("peer error", data);
@@ -58,7 +69,8 @@ DistPeer.prototype.fetchNext = function(imageid){
 	console.log("fetch", imageid);
 	var pid = this.peers[imageid].pop();
 	if(!pid){
-		console.log("no one has image", imageid);
+		console.log("no one has image, server will help me!", imageid);
+		this.socket.emit("raw", imageid);
 		return;
 	}
 	this.tryingimages[pid] = imageid;
@@ -86,7 +98,7 @@ DistPeer.prototype.fetchNext = function(imageid){
 		conn.on("data", function(image){
 			this.clearTimer(image.id);
 			var blob = new Blob([image.buf]);
-			this.callbacks[image.id](blob);
+			this.callbacks[image.id](false, blob);
 			this.addImage(image.id, blob);
 			conn.close();
 		}.bind(this));

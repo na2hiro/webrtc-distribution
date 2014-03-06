@@ -1,5 +1,8 @@
+var IMAGE_ID_REGEXP = /^[a-zA-Z0-9._]*$/;
+
 var PeerServer = require("peer").PeerServer;
 var server = new PeerServer({port: 9000, path: '/myapp'});
+var fs = require("fs");
 server.on("connection", function(id){
 	console.log("connection", id);
 });
@@ -21,8 +24,30 @@ io.sockets.on('connection', function(socket){
 		console.log("he is ", peerid);
 	});
 	socket.on("ids", function(id){
-		socket.emit("ids", {imageid: id, peerids: peers[id]||[]});
+		if(!id.match(IMAGE_ID_REGEXP)){
+			socket.emit("err", {message: "invalid file name", imageid: id});
+			return;
+		}
+		if(peers[id]){
+			socket.emit("ids", {imageid: id, peerids: peers[id]});
+		}else{
+			// 自分で送るしかない
+			sendraw(id);
+		}
 	});
+	socket.on("raw", function(id){
+		sendraw(id);
+	});
+	function sendraw(id){
+		console.log("!!! サーバが渋々送る !!!");
+		fs.readFile("public/"+id, function(err, buf){
+			if(err){
+				console.log("no such file");
+				return;
+			}
+			socket.emit("raw", {id: id, base64: buf.toString("base64")});
+		});
+	}
 	socket.on("ready", function(data){
 		console.log("ready", data);
 		if(peers[data.imageid]){

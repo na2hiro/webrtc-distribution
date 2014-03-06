@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <title>client</title>
 <script src="../peer.js"></script>
+<script src="base64.js"></script>
 <script src="http://localhost:9001/socket.io/socket.io.js"></script>
 <script src="distpeer.js"></script>
 <script>
 	// 受信
 	var p = new DistPeer();
 	p.initialize();
-	p.getImage("apple", function(blob){
+	p.getImage("apple.png", function(err, blob){
+		if(err){console.err(err);return;}
 		var img = new Image();
 		img.src = URL.createObjectURL(blob);
 		document.body.appendChild(img);
