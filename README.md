@@ -92,7 +92,7 @@ transfer files in sender-receiver style
 	* 接続後
 		* 発生時: conn.on("open")
 		* 撤回時: conn.on("data")
-* 複数画像(ランキングページそのもので使用)
+* **複数画像(ランキングページそのもので使用)**
 	* idとともに送って判別
 	* 複数人から貰う
 		* 早い人に多く送ってもらう？

@@ -21,7 +21,7 @@ DistPeer.prototype.prepareSending = function(){
 	this.peer.on("connection", function(conn){
 		conn.on("data", function(id){
 			console.log("he needs", id);
-			conn.send(this.images[id]);
+			conn.send({id: id, buf: this.images[id]});
 		}.bind(this));
 	}.bind(this));
 };
@@ -83,11 +83,11 @@ DistPeer.prototype.fetchNext = function(imageid){
 			this.fetchNext(imageid);
 		}.bind(this), 1000);
 		conn.send(imageid);
-		conn.on("data", function(buf){
-			this.clearTimer(imageid);
-			var blob = new Blob([buf]);
-			this.callbacks[imageid](blob);
-			this.addImage(imageid, blob);
+		conn.on("data", function(image){
+			this.clearTimer(image.id);
+			var blob = new Blob([image.buf]);
+			this.callbacks[image.id](blob);
+			this.addImage(image.id, blob);
 			conn.close();
 		}.bind(this));
 	}.bind(this));
