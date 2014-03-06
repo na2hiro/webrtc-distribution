@@ -2,8 +2,8 @@ var ranking=["http://i2.pixiv.net/img52/img/pon0737/mobile/41995790_240mw.jpg","
 var URL_INVALID_REGEXP = /[\/:]/g;
 
 var PeerServer = require("peer").PeerServer;
-var server = new PeerServer({port: 9000, path: '/myapp'});
-var fs = require("fs");
+var server = new PeerServer({port: 8602, path: '/myapp'});
+var fs = require("fs"), path = require("path");
 server.on("connection", function(id){
 	console.log("connection", id);
 });
@@ -19,7 +19,13 @@ server.on("disconnect", function(peerid){
 
 var peers = {}; // imageid=>[peerid]
 
-var io = require("socket.io").listen(9001);
+var express = require("express"), app=express();
+app.set("port", 8604);
+app.use(express.static(path.join(__dirname, 'public')));
+var http = require("http");
+var httpserver = http.createServer(app);
+httpserver.listen(8604);
+var io = require("socket.io").listen(httpserver);
 io.sockets.on('connection', function(socket){
 	socket.on("iam", function(peerid){
 		console.log("he is ", peerid);

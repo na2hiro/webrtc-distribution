@@ -8,8 +8,8 @@ DistPeer.prototype.initialize = function(){
 	this.conns = {} // peerid=>DataConnection
 	this.counts = {timeout: 0, frompeer: 0, fromserver: 0};
 	this.peercounts= {};
-	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
-	this.socket = io.connect("http://localhost:9001");
+	this.peer = new Peer({host: location.hostname, port: 8602, path: "/myapp"});
+	this.socket = io.connect();
 	this.peer.on("open", function(id){
 		console.log("peer open: I am", id);
 		this.safeSendPeerId();
