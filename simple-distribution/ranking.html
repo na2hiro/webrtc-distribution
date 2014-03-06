@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>super client</title>
+<script src="ranking.js"></script>
+<script src="../peer.js"></script>
+<script src="base64.js"></script>
+<script src="http://localhost:9001/socket.io/socket.io.js"></script>
+<script src="distpeer.js"></script>
+</head>
+<body>
+<table id="table"></table>
+<script>
+	var p = new DistPeer();
+	p.initialize();
+	var table = document.getElementById("table");
+	var num = 0;
+	for(var i=0; i<Math.ceil(50/3); i++){
+		var tr = table.insertRow(table.rows.length);
+		for(var j=0; j<3; j++){
+			if(num>=50) break;
+			var td = tr.insertCell(tr.cells.length);
+			td.appendChild(function(){
+				var img = new Image();
+				p.getImage(ranking[num], function(err, image){
+					if(!err) img.src = URL.createObjectURL(image.blob);
+				});
+				return img;
+			}());
+			num++;
+		}
+	}
+</script>
+</body>
+</html>

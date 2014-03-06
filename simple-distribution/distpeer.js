@@ -4,7 +4,8 @@ DistPeer.prototype.initialize = function(){
 	this.callbacks={}; // imageid=>callback
 	this.peers = {}; // imageid=>[peerid]
 	this.timers = {}; // imageid=>Timer
-	this.tryingimages = {};// peerid=>imageid
+	this.tryingimages = {};// peerid=>[imageid]
+	this.conns = {} // peerid=>DataConnection
 	this.peer = new Peer({host: "localhost", port: 9000, path: "/myapp"});
 	this.socket = io.connect("http://localhost:9001");
 	this.peer.on("open", function(id){
@@ -49,9 +50,12 @@ DistPeer.prototype.prepareReceiving = function(){
 		console.log("peer error", data);
 		var match = data.message.match(this.PEER_ERROR_MESSAGE_REGEXP);
 		if(match){
-			var imageid = this.tryingimages[match[1]];
-			this.clearTimer(imageid);
-			this.fetchNext(imageid);
+			var imageids = this.tryingimages[match[1]];
+			for(var i=0; i<imageids; i++){
+				var imageid = imageids[i];
+				this.clearTimer(imageid);
+				this.fetchNext(imageid);
+			}
 		}
 	}.bind(this));
 };
@@ -73,36 +77,59 @@ DistPeer.prototype.fetchNext = function(imageid){
 		this.socket.emit("raw", imageid);
 		return;
 	}
-	this.tryingimages[pid] = imageid;
-	var conn = this.peer.connect(pid);
-	this.setTimer(imageid, function(){
-		console.log("timeout: ピアにつながらなかった");
-		conn.close();
-		this.fetchNext(imageid);
-	}.bind(this), 1000);
-	CONN = conn;
-	conn.on("error", function(err){
-		// 無効なpeer idの場合ここにはこない (どういう時に来るの？)
-		console.log("error", err);
-		this.fetchNext();
-	}.bind(this))
-	conn.on("open", function(){
-		console.log("giveme", imageid, pid);
-		var got=false;
-		this.setTimer(imageid, function(){
-			console.log("timeout: つながったけどデータがこない");
-			conn.close();
-			this.fetchNext(imageid);
-		}.bind(this), 1000);
-		conn.send(imageid);
+	var conn;
+	if(!this.tryingimages[pid]){
+		//新たにつなぐ
+		console.log("新たなconn");
+		this.tryingimages[pid]=[];	
+		conn = this.peer.connect(pid);
+		this.conns[pid] = conn;
+		conn.on("error", function(err){
+			// 無効なpeer idの場合ここにはこない (どういう時に来るの？)
+			console.log("error", err);
+			//this.fetchNext();
+		}.bind(this))
+		conn.on("open", function(){
+			start(this);
+		}.bind(this));
 		conn.on("data", function(image){
 			this.clearTimer(image.id);
 			var blob = new Blob([image.buf]);
 			this.callbacks[image.id](false, {id: image.id, blob: blob});
 			this.addImage(image.id, blob);
-			conn.close();
+			// もうこのピアから貰うものがなければ切る
+			this.tryingimages[pid]=this.tryingimages[pid].filter(function(iid){return iid!=image.id;});
+			if(this.tryingimages[pid].length==0){
+				conn.close();
+			}
 		}.bind(this));
-	}.bind(this));
+	}else{
+		//既存の
+		console.log("既存のconn")
+		conn=this.conns[pid];
+		if(conn.open){
+			start(this);
+		}else{
+			conn.on("open", function(){
+				start(this);
+			}.bind(this));
+		}
+	}
+	this.setTimer(imageid, function(){
+		console.log("timeout: ピアにつながらなかった");
+		conn.close();
+		this.fetchNext(imageid);
+	}.bind(this), 1000);
+	this.tryingimages[pid].push(imageid);
+	function start(that){
+		console.log("giveme", imageid, pid);
+		that.setTimer(imageid, function(){
+			console.log("timeout: つながったけどデータがこない");
+			conn.close();
+			that.fetchNext(imageid);
+		}.bind(that), 1000);
+		conn.send(imageid);
+	}
 };
 DistPeer.prototype.addImage = function(imageid, blob){
 	console.log("clearTimer");
