@@ -75,7 +75,7 @@ transfer files in sender-receiver style
 	* ページ遷移しないで表示できるUI
 		* 頻繁にページ遷移されると送っている最中に切断されることが多発しそうなため
 		* デイリーランキング等表示するものが決まっているもの？
-* 画像が受け取れない事例
+* ✓画像が受け取れない事例
 	* ✓peerに接続できない(直前に去った)
 		* noisyserver.jsはノイズ(ダミー)ピアIDを混ぜて送る
 		* peerにつながらないエラーはDataConnection#on('error')ではなくPeer#on('error')で来る
