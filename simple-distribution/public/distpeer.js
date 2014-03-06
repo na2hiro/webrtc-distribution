@@ -87,6 +87,13 @@ DistPeer.prototype.fetchNext = function(imageid){
 		this.tryingimages[pid]=[];	
 		conn = this.peer.connect(pid);
 		this.conns[pid] = conn;
+		this.setTimer(imageid, function(){
+			// 新たにつなぐときにn秒たったらタイムアウト
+			console.log("timeout: ピアにつながらなかった");
+			this.increment("timeout");
+			conn.close();
+			this.fetchNext(imageid);
+		}.bind(this), 3000);
 		conn.on("error", function(err){
 			// 無効なpeer idの場合ここにはこない (どういう時に来るの？)
 			console.log("error", err);
@@ -120,21 +127,15 @@ DistPeer.prototype.fetchNext = function(imageid){
 			}.bind(this));
 		}
 	}
-	this.setTimer(imageid, function(){
-		console.log("timeout: ピアにつながらなかった");
-		this.increment("timeout");
-		conn.close();
-		this.fetchNext(imageid);
-	}.bind(this), 3000);
 	this.tryingimages[pid].push(imageid);
 	function start(that){
 		console.log("giveme", imageid, pid);
-		that.setTimer(imageid, function(){
+/*		that.setTimer(imageid, function(){
 			console.log("timeout: つながったけどデータがこない");
 			this.increment("timeout");
 			conn.close();
 			that.fetchNext(imageid);
-		}.bind(that), 1000);
+		}.bind(that), 1000);*/
 		conn.send(imageid);
 	}
 };
