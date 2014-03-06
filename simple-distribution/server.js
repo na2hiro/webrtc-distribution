@@ -37,7 +37,7 @@ io.sockets.on('connection', function(socket){
 	});
 	function sendraw(id){
 		console.log("!!! サーバが渋々送る !!!");
-		fs.readFile("public/"+safeFilename(id), function(err, buf){
+		fs.readFile("images/"+safeFilename(id), function(err, buf){
 			if(err){
 				console.log("no such file");
 				return;
